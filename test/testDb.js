@@ -1,37 +1,37 @@
 'use strict';
 
 require('co-mocha');
-require('rx-to-async-iterator');
+require('rxjs-to-async-iterator');
 
-const Rx = require('rx');
+const Rx = require('rxjs');
 const expect = require('chai').expect;
 const RxCouch = require('../lib/server');
 const nock = require('nock');
 const shallowCopy = require('shallow-copy');
 
-describe('rx-couch.db()', () => {
+describe('rxjs-couch.db()', () => {
   const server = new RxCouch('http://127.0.0.1:5984');
 
   before('create test database', function * () {
     this.timeout(5000);
 
     const dbsAfterCreate = yield (Rx.Observable.concat(
-      server.createDatabase('test-rx-couch-db'),
+      server.createDatabase('test-rxjs-couch-db'),
       server.allDatabases())).shouldGenerateOneValue();
 
     expect(dbsAfterCreate).to.be.an('array');
-    expect(dbsAfterCreate).to.include('test-rx-couch-db');
+    expect(dbsAfterCreate).to.include('test-rxjs-couch-db');
   });
 
   after('remove test database', function * () {
     this.timeout(5000);
 
     const dbsAfterDelete = yield (Rx.Observable.concat(
-      server.deleteDatabase('test-rx-couch-db'),
+      server.deleteDatabase('test-rxjs-couch-db'),
       server.allDatabases())).shouldGenerateOneValue();
 
     expect(dbsAfterDelete).to.be.an('array');
-    expect(dbsAfterDelete).to.not.include('test-rx-couch-db');
+    expect(dbsAfterDelete).to.not.include('test-rxjs-couch-db');
   });
 
   it('should be defined', () => {
@@ -54,7 +54,7 @@ describe('rx-couch.db()', () => {
     expect(() => server.db('_users')).to.throw('rxCouch.db: illegal dbName');
   });
 
-  const db = server.db('test-rx-couch-db');
+  const db = server.db('test-rxjs-couch-db');
     // Defined out of scope because we use it throughout this test suite.
 
   it('should return an object', () => {
@@ -125,12 +125,12 @@ describe('rx-couch.db()', () => {
 
     it('should fail when _id matches an existing document but no _rev is provided', function * () {
       const err = yield db.put({_id: 'testing123', foo: 'bar'}).shouldThrow();
-      expect(err.message).to.equal('HTTP Error 409 on http://127.0.0.1:5984/test-rx-couch-db/testing123: Conflict');
+      expect(err.message).to.equal('HTTP Error 409 on http://127.0.0.1:5984/test-rxjs-couch-db/testing123: Conflict');
     });
 
     it('should fail when _id matches an existing document but incorrect _rev is provided', function * () {
       const err = yield db.put({_id: 'testing123', '_rev': 'bogus', foo: 'bar'}).shouldThrow();
-      expect(err.message).to.equal('HTTP Error 400 on http://127.0.0.1:5984/test-rx-couch-db/testing123: Bad Request');
+      expect(err.message).to.equal('HTTP Error 400 on http://127.0.0.1:5984/test-rxjs-couch-db/testing123: Bad Request');
     });
   });
 
@@ -167,7 +167,7 @@ describe('rx-couch.db()', () => {
 
     it("should fail when _id doesn't match an existing document", function * () {
       const err = yield db.get('testing432').shouldThrow();
-      expect(err.message).to.equal('HTTP Error 404 on http://127.0.0.1:5984/test-rx-couch-db/testing432: Object Not Found');
+      expect(err.message).to.equal('HTTP Error 404 on http://127.0.0.1:5984/test-rxjs-couch-db/testing432: Object Not Found');
     });
   });
 
@@ -499,7 +499,7 @@ describe('rx-couch.db()', () => {
 
     it('should fail when _id matches an existing document but incorrect _rev is provided', function * () {
       const err = yield db.delete('testing123', 'bogus').shouldThrow();
-      expect(err.message).to.equal('HTTP Error 400 on http://127.0.0.1:5984/test-rx-couch-db/testing123: Bad Request');
+      expect(err.message).to.equal('HTTP Error 400 on http://127.0.0.1:5984/test-rxjs-couch-db/testing123: Bad Request');
     });
 
     it('should delete an existing document when correct _id and _rev are provided', function * () {
@@ -512,23 +512,23 @@ describe('rx-couch.db()', () => {
 
     it('should actually have deleted the existing document', function * () {
       const err = yield db.get('testing123').shouldThrow();
-      expect(err.message).to.equal('HTTP Error 404 on http://127.0.0.1:5984/test-rx-couch-db/testing123: Object Not Found');
+      expect(err.message).to.equal('HTTP Error 404 on http://127.0.0.1:5984/test-rxjs-couch-db/testing123: Object Not Found');
     });
   });
 
   describe('.replicateFrom()', () => {
-    const srcDb = server.db('test-rx-couch-clone-source');
+    const srcDb = server.db('test-rxjs-couch-clone-source');
 
     before('create test databases', function * () {
-      yield server.createDatabase('test-rx-couch-clone-source').shouldBeEmpty();
-      yield server.createDatabase('test-rx-couch-clone-target').shouldBeEmpty();
+      yield server.createDatabase('test-rxjs-couch-clone-source').shouldBeEmpty();
+      yield server.createDatabase('test-rxjs-couch-clone-target').shouldBeEmpty();
       let putObject = {_id: 'testing234', foo: 'bar'};
       yield srcDb.put(putObject).shouldGenerateOneValue();
     });
 
     after('destroy test databases', function * () {
-      yield server.deleteDatabase('test-rx-couch-clone-source').shouldBeEmpty();
-      yield server.deleteDatabase('test-rx-couch-clone-target').shouldBeEmpty();
+      yield server.deleteDatabase('test-rxjs-couch-clone-source').shouldBeEmpty();
+      yield server.deleteDatabase('test-rxjs-couch-clone-target').shouldBeEmpty();
     });
 
     it('should throw if options is missing', () => {
@@ -541,14 +541,14 @@ describe('rx-couch.db()', () => {
 
     it('should throw if options contains a "target" entry', () => {
       expect(() => srcDb.replicateFrom({
-        source: 'test-rx-couch-clone-source',
-        target: 'test-rx-couch-clone-target'
+        source: 'test-rxjs-couch-clone-source',
+        target: 'test-rxjs-couch-clone-target'
       })).to.throw('rxCouch.db.replicateFrom: options.target must not be specified');
     });
 
     it('should return an Observable with status information', function * () {
       const replResult = yield srcDb.replicateFrom({
-        source: 'test-rx-couch-clone-source'
+        source: 'test-rxjs-couch-clone-source'
       }).shouldGenerateOneValue();
 
       expect(replResult).to.be.an('object');
@@ -862,52 +862,52 @@ describe('rx-couch.db()', () => {
     it("should work even if the server doesn't support _doc_ids filter", function * () {
       // For example: Couchbase Lite on iOS ...
       const server = new RxCouch('http://localhost:5979');
-      const db = server.db('test-rx-couch-db');
+      const db = server.db('test-rxjs-couch-db');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/testing987')
+        .get('/test-rxjs-couch-db/testing987')
         .reply(200, '{"_id":"testing987","_rev":"1-9b37e2fd94778a46692565e0563a0a4f","phone":"ring"}');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/_changes?doc_ids=%5B%22testing987%22%5D&feed=longpoll&filter=_doc_ids&include_docs=true')
+        .get('/test-rxjs-couch-db/_changes?doc_ids=%5B%22testing987%22%5D&feed=longpoll&filter=_doc_ids&include_docs=true')
         .reply(404, '{"error":"not_found","reason":"missing"}'); // CBL's way of saying not supported
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/_changes?feed=longpoll&include_docs=true&since=now')
+        .get('/test-rxjs-couch-db/_changes?feed=longpoll&include_docs=true&since=now')
         .delay(200)
         .reply(200, '{"results":[{"seq":17,"id":"testing987","changes":[{"rev":"1-9b37e2fd94778a46692565e0563a0a4f"}],"doc":{"_id":"testing987","_rev":"1-9b37e2fd94778a46692565e0563a0a4f","phone":"ring"}}],"last_seq":17}');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/testing987')
+        .get('/test-rxjs-couch-db/testing987')
         .reply(200, '{"_id":"testing987","_rev":"1-9b37e2fd94778a46692565e0563a0a4f","phone":"ring"}');
 
       nock('http://localhost:5979')
-        .put('/test-rx-couch-db/testing987', '{"phone":"hup"}')
+        .put('/test-rxjs-couch-db/testing987', '{"phone":"hup"}')
         .reply(201, '{"ok":true,"id":"testing987","rev":"2-35a5f4b576f2b82f80bc69e71178d236"}');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/_changes?feed=longpoll&include_docs=true&since=17')
+        .get('/test-rxjs-couch-db/_changes?feed=longpoll&include_docs=true&since=17')
         .reply(200, '{"results":[{"seq":18,"id":"testing987","changes":[{"rev":"2-35a5f4b576f2b82f80bc69e71178d236"}],"doc":{"_id":"testing987","_rev":"2-35a5f4b576f2b82f80bc69e71178d236","phone":"hup"}}],"last_seq":18}');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/_changes?feed=longpoll&include_docs=true&since=18')
+        .get('/test-rxjs-couch-db/_changes?feed=longpoll&include_docs=true&since=18')
         .delay(1000)
         .reply(200, '{"results":[],"last_seq":18}');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/testing987')
+        .get('/test-rxjs-couch-db/testing987')
         .reply(200, '{"_id":"testing987","_rev":"2-35a5f4b576f2b82f80bc69e71178d236","phone":"hup"}');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/testing987')
+        .get('/test-rxjs-couch-db/testing987')
         .reply(200, '{"_id":"testing987","_rev":"2-35a5f4b576f2b82f80bc69e71178d236","phone":"hup"}');
 
       nock('http://localhost:5979')
-        .put('/test-rx-couch-db/testing987', '{"phone":"again?"}')
+        .put('/test-rxjs-couch-db/testing987', '{"phone":"again?"}')
         .reply(201, '{"ok":true,"id":"testing987","rev":"3-mumble"}');
 
       nock('http://localhost:5979')
-        .get('/test-rx-couch-db/_changes?feed=longpoll&include_docs=true&since=now')
+        .get('/test-rxjs-couch-db/_changes?feed=longpoll&include_docs=true&since=now')
         .delay(200)
         .reply(200, '{"results":[{"seq":19,"id":"testing987","changes":[{"rev":"3-mumble"}],"doc":{"_id":"testing987","_rev":"3-mumble","phone":"again?"}}],"last_seq":19}');
 

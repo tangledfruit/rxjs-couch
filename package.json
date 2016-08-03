@@ -1,7 +1,7 @@
 {
-  "name": "rx-couch",
+  "name": "rxjs-couch",
   "version": "1.7.7",
-  "description": "RxJS-flavored APIs for CouchDB",
+  "description": "RxJS-flavored APIs for CouchDB (for RxJS 5.0+)",
   "main": "index.js",
   "scripts": {
     "test": "semistandard && mocha",
@@ -9,20 +9,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tangledfruit/rx-couch.git"
+    "url": "git+https://github.com/tangledfruit/rxjs-couch.git"
   },
   "keywords": [
     "couchdb",
     "rx",
     "rxjs",
+    "rxjs5",
     "nosql"
   ],
   "author": "tangledfruit <code@tangledfruit.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tangledfruit/rx-couch/issues"
+    "url": "https://github.com/tangledfruit/rxjs-couch/issues"
   },
-  "homepage": "https://github.com/tangledfruit/rx-couch#readme",
+  "homepage": "https://github.com/tangledfruit/rxjs-couch#readme",
   "devDependencies": {
     "chai": "^3.5.0",
     "co-mocha": "^1.1.3",
@@ -30,14 +31,14 @@
     "istanbul": "^0.4.4",
     "mocha": "^3.0.0",
     "nock": "^8.0.0",
-    "rx-to-async-iterator": "^1.2.2",
+    "rxjs-to-async-iterator": "^2.1.2",
     "semistandard": "^8.0.0"
   },
   "dependencies": {
     "deep-eql": "^0.1.3",
     "deepmerge": "^0.2.10",
-    "rx": ">=4.0.7 <5",
-    "rx-fetch": "^1.3.4",
+    "rxjs": ">=5.0.0-beta.10 <6",
+    "rxjs-fetch": "^2.1.4",
     "shallow-copy": "^0.0.1"
   },
   "engines": {

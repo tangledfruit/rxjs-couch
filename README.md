@@ -1,19 +1,23 @@
-# rx-couch [![Build Status](https://travis-ci.org/tangledfruit/rx-couch.svg?branch=master)](https://travis-ci.org/tangledfruit/rx-couch) [![Coverage Status](https://coveralls.io/repos/tangledfruit/rx-couch/badge.svg?branch=master&service=github)](https://coveralls.io/github/tangledfruit/rx-couch?branch=master) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
+# rxjs-couch [![Build Status](https://travis-ci.org/tangledfruit/rxjs-couch.svg?branch=master)](https://travis-ci.org/tangledfruit/rxjs-couch) [![Coverage Status](https://coveralls.io/repos/tangledfruit/rxjs-couch/badge.svg?branch=master&service=github)](https://coveralls.io/github/tangledfruit/rxjs-couch?branch=master) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
 
 RxJS-flavored APIs for CouchDB
 
 ## Installation
 
+**IMPORTANT:** This library only supports RxJS 5.x.
+
+**Looking for RxJS 4.x support?** Try  [rx-couch](https://github.com/tangledfruit/rx-couch). (Same name but replace 'rxjs' with 'rx'.)
+
 ### NPM
 
 ```sh
-npm install --save rx-couch
+npm install --save rxjs-couch
 ```
 
 ## Usage
 
 ```js
-const RxCouch = require('rx-couch');
+const RxCouch = require('rxjs-couch');
 
 const server = new RxCouch('http://my.host:5984');
 
@@ -26,12 +30,12 @@ server.allDatabases()
 // Create a database. By default, this will ignore 412 errors on the assumption
 // that this means "database already exists."
 // http://docs.couchdb.org/en/latest/api/database/common.html#put--db
-server.createDatabase('test-rx-couch')
+server.createDatabase('test-rxjs-couch')
   .subscribeOnCompleted(); // fires when done
 
 // Create a database and fail if the database already exists.
 // http://docs.couchdb.org/en/latest/api/database/common.html#put--db
-server.createDatabase('test-rx-couch', {failIfExists: true})
+server.createDatabase('test-rxjs-couch', {failIfExists: true})
   .subscribeOnError(); // In this example, an error event would be sent.
 
 // Delete a database.
@@ -47,7 +51,7 @@ server.replicate({source: 'db1', target: 'db2'})
 
 // Create a database object to interact with a single database on the server.
 // WARNING: Does not create the database. See .createDatabase above.
-const db = server.db('test-rx-couch');
+const db = server.db('test-rxjs-couch');
 
 // Create a new document and let CouchDB assign an ID.
 // http://docs.couchdb.org/en/latest/api/database/common.html#post--db
@@ -146,7 +150,7 @@ db.changes({include_docs: true})
 ```
 
 If any HTTP errors occur, they will be reported via `onError` notification on
-the Observable using the [HTTP error object from rx-fetch](https://github.com/tangledfruit/rx-fetch#http-error-object).
+the Observable using the [HTTP error object from rxjs-fetch](https://github.com/tangledfruit/rxjs-fetch#http-error-object).
 
 ## License
 

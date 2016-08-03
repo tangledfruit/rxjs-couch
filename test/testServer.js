@@ -1,14 +1,14 @@
 'use strict';
 
 require('co-mocha');
-require('rx-to-async-iterator');
+require('rxjs-to-async-iterator');
 
-const Rx = require('rx');
+const Rx = require('rxjs');
 const expect = require('chai').expect;
 const nock = require('nock');
 const RxCouch = require('../lib/server');
 
-describe('rx-couch', () => {
+describe('rxjs-couch', () => {
   it('should be defined', () => {
     expect(RxCouch).to.be.a('function');
   });
@@ -55,15 +55,15 @@ describe('rx-couch', () => {
 
   describe('.createDatabase()', () => {
     it('should return an Observable which sends only onCompleted when done', function * () {
-      yield server.createDatabase('test-rx-couch').shouldBeEmpty();
+      yield server.createDatabase('test-rxjs-couch').shouldBeEmpty();
     });
 
     it('should succeed even if the database already exists', function * () {
-      yield server.createDatabase('test-rx-couch').shouldBeEmpty();
+      yield server.createDatabase('test-rxjs-couch').shouldBeEmpty();
     });
 
     it('should succeed even if the database already exists {failIfExists: false}', function * () {
-      yield server.createDatabase('test-rx-couch').shouldBeEmpty();
+      yield server.createDatabase('test-rxjs-couch').shouldBeEmpty();
     });
 
     it('should throw if database name is missing', () => {
@@ -92,43 +92,43 @@ describe('rx-couch', () => {
 
     it('should actually create a new database', function * () {
       const dbsAfterCreate = yield (Rx.Observable.concat(
-        server.createDatabase('test-rx-couch'),
+        server.createDatabase('test-rxjs-couch'),
         server.allDatabases())).shouldGenerateOneValue();
 
       expect(dbsAfterCreate).to.be.an('array');
-      expect(dbsAfterCreate).to.include('test-rx-couch');
+      expect(dbsAfterCreate).to.include('test-rxjs-couch');
     });
 
     it('should signal an error if database already exists (but only if so requested)', function * () {
-      const err = yield server.createDatabase('test-rx-couch', {failIfExists: true}).shouldThrow();
-      expect(err.message).to.equal('HTTP Error 412 on http://localhost:5984/test-rx-couch: Precondition Failed');
+      const err = yield server.createDatabase('test-rxjs-couch', {failIfExists: true}).shouldThrow();
+      expect(err.message).to.equal('HTTP Error 412 on http://localhost:5984/test-rxjs-couch: Precondition Failed');
     });
 
     it('should send an onError message if server yields unexpected result', function * () {
       nock('http://localhost:5979')
-        .put('/test-rx-couch')
+        .put('/test-rxjs-couch')
         .reply(500);
 
-      const err = yield (new RxCouch('http://localhost:5979').createDatabase('test-rx-couch')).shouldThrow();
-      expect(err.message).to.equal('HTTP Error 500 on http://localhost:5979/test-rx-couch: Internal Server Error');
+      const err = yield (new RxCouch('http://localhost:5979').createDatabase('test-rxjs-couch')).shouldThrow();
+      expect(err.message).to.equal('HTTP Error 500 on http://localhost:5979/test-rxjs-couch: Internal Server Error');
     });
   });
 
   describe('.replicate()', () => {
     nock.cleanAll();
 
-    const srcDb = server.db('test-rx-couch-clone-source');
+    const srcDb = server.db('test-rxjs-couch-clone-source');
 
     before('create test databases', function * () {
-      yield server.createDatabase('test-rx-couch-clone-source').shouldBeEmpty();
-      yield server.createDatabase('test-rx-couch-clone-target').shouldBeEmpty();
+      yield server.createDatabase('test-rxjs-couch-clone-source').shouldBeEmpty();
+      yield server.createDatabase('test-rxjs-couch-clone-target').shouldBeEmpty();
       let putObject = {_id: 'testing234', foo: 'bar'};
       yield srcDb.put(putObject).shouldGenerateOneValue();
     });
 
     after('destroy test databases', function * () {
-      yield server.deleteDatabase('test-rx-couch-clone-source').shouldBeEmpty();
-      yield server.deleteDatabase('test-rx-couch-clone-target').shouldBeEmpty();
+      yield server.deleteDatabase('test-rxjs-couch-clone-source').shouldBeEmpty();
+      yield server.deleteDatabase('test-rxjs-couch-clone-target').shouldBeEmpty();
     });
 
     it('should throw if options is missing', () => {
@@ -141,8 +141,8 @@ describe('rx-couch', () => {
 
     it('should return an Observable with status information', function * () {
       const replResult = yield server.replicate({
-        source: 'test-rx-couch-clone-source',
-        target: 'test-rx-couch-clone-target'
+        source: 'test-rxjs-couch-clone-source',
+        target: 'test-rxjs-couch-clone-target'
       }).shouldGenerateOneValue();
 
       expect(replResult).to.be.an('object');
@@ -155,11 +155,11 @@ describe('rx-couch', () => {
     nock.cleanAll();
 
     it('should return an Observable which sends only onCompleted when done', function * () {
-      yield server.deleteDatabase('test-rx-couch').shouldBeEmpty();
+      yield server.deleteDatabase('test-rxjs-couch').shouldBeEmpty();
     });
 
     it("should succeed even if the database doesn't already exist", function * () {
-      yield server.deleteDatabase('test-rx-couch').shouldBeEmpty();
+      yield server.deleteDatabase('test-rxjs-couch').shouldBeEmpty();
     });
 
     it('should throw if database name is missing', () => {
@@ -180,20 +180,20 @@ describe('rx-couch', () => {
 
     it('should actually delete the existing database', function * () {
       const dbsAfterDelete = yield (Rx.Observable.concat(
-        server.deleteDatabase('test-rx-couch'),
+        server.deleteDatabase('test-rxjs-couch'),
         server.allDatabases())).shouldGenerateOneValue();
 
       expect(dbsAfterDelete).to.be.an('array');
-      expect(dbsAfterDelete).to.not.include('test-rx-couch');
+      expect(dbsAfterDelete).to.not.include('test-rxjs-couch');
     });
 
     it('should send an onError message if server yields unexpected result', function * () {
       nock('http://localhost:5979')
-        .delete('/test-rx-couch')
+        .delete('/test-rxjs-couch')
         .reply(500);
 
-      const err = yield (new RxCouch('http://localhost:5979').deleteDatabase('test-rx-couch')).shouldThrow();
-      expect(err.message).to.equal('HTTP Error 500 on http://localhost:5979/test-rx-couch: Internal Server Error');
+      const err = yield (new RxCouch('http://localhost:5979').deleteDatabase('test-rxjs-couch')).shouldThrow();
+      expect(err.message).to.equal('HTTP Error 500 on http://localhost:5979/test-rxjs-couch: Internal Server Error');
     });
   });
 });
